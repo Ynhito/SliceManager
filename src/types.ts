@@ -32,4 +32,9 @@ export type Handlers<T extends Record<string, unknown>> = {
     [K in keyof T]: CaseReducer<T, PayloadAction<any>> | CaseReducerWithPrepare<T, PayloadAction<any, string, any, any>>;
 }
 
+export type HookHandlers<T extends Record<string, unknown>> = {
+  [K in keyof T]: (value: T[K]) => void;
+}
+
 export type CapitalizeHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Handlers<S>>;
+export type CapitalizeHookHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<HookHandlers<S>>;

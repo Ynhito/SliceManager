@@ -13,7 +13,7 @@
        "noImplicitReturns": true,
        "noUnusedLocals": true,
        "strict": true,
-       "outDir": ".",
+       "outDir": "./dist",
        "baseUrl": "src",
        "strictNullChecks": true,
        "allowJs": false,
