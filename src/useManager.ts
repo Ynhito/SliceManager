@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { SliceManager } from './SliceManager';
 import {useDispatch, useSelector} from 'react-redux';
-import { CapitalizeHookHandlers } from 'types';
+import { CapitalizeHookHandlers } from './types';
 
 export function useManager<
     T extends Record<string, unknown>,
@@ -30,3 +30,31 @@ export function useManager<
         handlers,
     ]
 }
+
+type State = {counter: number, short: boolean}
+
+export const manager = new SliceManager<State>(
+    'manager', 
+    {
+        counter: 1,
+        short: false
+    },
+    [
+      {
+        handler: (state) => (dispatch, getState) => {
+          console.log(state);
+          // dispatch(manager.actions.changeShort(true));
+        }, 
+        fields: ['counter']
+      },
+      {
+        handler: (state) => (dispatch, getState) => {
+          console.log(state);
+          dispatch(manager.actions.changeCounter(state.counter + 10));
+        }, 
+        fields: ['short']
+      },
+    ]
+)
+
+const [{}, {}] = useManager<State>(manager)
