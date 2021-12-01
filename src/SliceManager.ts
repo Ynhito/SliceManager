@@ -1,36 +1,27 @@
 import {
-  CaseReducerActions,
   createSlice,
   Draft,
   PayloadAction,
   Slice,
   SliceCaseReducers,
-  ThunkAction,
-  ValidateSliceCaseReducers,
-  Action,
-  CreateSliceOptions,
 } from '@reduxjs/toolkit';
-import { AnyAction } from 'redux';
-import { ThunkMiddleware } from 'redux-thunk';
-import { CapitalizeHandlers } from './types';
+import { ManagerActions, ManagerExtraReducers, ManagerMiddleware, ManagerReducers, WatcherHandlerAction } from './types';
 import { capitalizeKey, decapitalize } from './utils';
 
 export class SliceManager<T extends Record<string, unknown>> {
   public slice: Slice<T, SliceCaseReducers<T>>;
-  public actions:
-    | CaseReducerActions<CapitalizeHandlers<T>>
-    | CaseReducerActions<SliceCaseReducers<T>>;
+  public actions: ManagerActions<T>;
   constructor(
     readonly name: string,
     initialState: T,
     readonly watchers: Array<{
-      handler: (params: T) => ThunkAction<any, T & any, undefined, Action<string>>;
+      handler: (params: T) => WatcherHandlerAction<T>;
       fields: Array<keyof T>;
     }> = [],
-    extraReducers?: CreateSliceOptions<T, SliceCaseReducers<T>, string>['extraReducers'],
+    extraReducers?: ManagerExtraReducers<T>,
   ) {
     const reducers = Object.keys(initialState).reduce(
-      (acc: ValidateSliceCaseReducers<T, SliceCaseReducers<T>>, cur: keyof Draft<T>) => {
+      (acc: ManagerReducers<T>, cur: keyof Draft<T>) => {
         const handlerKey = capitalizeKey(cur);
         acc[handlerKey] = (state, action) => {
           state[cur] = action.payload;
@@ -48,7 +39,7 @@ export class SliceManager<T extends Record<string, unknown>> {
     });
     this.actions = this.slice.actions;
   }
-  public middleware: ThunkMiddleware<T & any, AnyAction, undefined> = ({ dispatch, getState }) => (
+  public middleware: ManagerMiddleware<T> = ({ dispatch, getState }) => (
     next,
   ) => (action: PayloadAction) => {
     next(action);

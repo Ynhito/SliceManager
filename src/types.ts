@@ -1,4 +1,6 @@
-import { CaseReducer, CaseReducerWithPrepare, PayloadAction } from "@reduxjs/toolkit"
+import { CaseReducer, CaseReducerWithPrepare, PayloadAction, ThunkAction, Action, CaseReducerActions, SliceCaseReducers, CreateSliceOptions, ValidateSliceCaseReducers } from "@reduxjs/toolkit"
+import { ThunkMiddleware } from 'redux-thunk';
+import { AnyAction } from 'redux';
 
 export type Cast<T, U> = T extends U ? T : any
 
@@ -38,3 +40,10 @@ export type HookHandlers<T extends Record<string, unknown>> = {
 
 export type CapitalizeHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Handlers<S>>;
 export type CapitalizeHookHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<HookHandlers<S>>;
+
+export type WatcherHandlerAction<T> = ThunkAction<any, T & any, undefined, Action<string>>
+export type ManagerMiddleware<T> = ThunkMiddleware<T & any, AnyAction, undefined>
+export type ManagerActions<T extends Record<string, unknown>> = CaseReducerActions<CapitalizeHandlers<T>>
+| CaseReducerActions<SliceCaseReducers<T>>
+export type ManagerReducers<T> = ValidateSliceCaseReducers<T, SliceCaseReducers<T>>;
+export type ManagerExtraReducers<T> = CreateSliceOptions<T, SliceCaseReducers<T>, string>['extraReducers']

@@ -12,8 +12,8 @@ export function useManager<
 ] {
     const dispatch = useDispatch();
     const params: T = useSelector((state: any) => state[name]);
-    const handlers = useMemo(() => {
-        return <CapitalizeHookHandlers<T>>Object.keys(actions).reduce((acc, cur) => {
+    const handlers = <CapitalizeHookHandlers<T>>useMemo(() => {
+        return Object.keys(actions).reduce((acc, cur) => {
             const key = <keyof typeof actions>cur;
             const action = <Exclude<typeof actions[typeof key], void>>actions[key];
             return {
