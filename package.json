@@ -1,6 +1,6 @@
 {
   "name": "rtk-slice-manager",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Wrap over slice from @reduxjs/toolkit for automatic generation of actions and isolation of effect logic after changing the state of the fields",
   "main": "dist/index.js",
   "types": "dist",
@@ -22,7 +22,11 @@
     "slice",
     "manager",
     "effects",
-    "watcher"
+    "watcher",
+    "redux",
+    "react",
+    "hook",
+    "store"
   ],
   "author": "Dmitry Osincev",
   "license": "MIT",
