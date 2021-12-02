@@ -43,7 +43,11 @@ export class SliceManager<T extends Record<string, unknown>> {
     next,
   ) => (action: PayloadAction) => {
     next(action);
-    const field = action.type.split(`${this.name}/`)[1].split('change')[1];
+    const managerName = action.type.split(`/`);
+    if (managerName[0] !== this.name) {
+      return;
+    }
+    const field = managerName[1].split('change')[1];
     const actionName = decapitalize(field);
     const params: T = getState()[this.name];
     for (const watcher of this.watchers) {

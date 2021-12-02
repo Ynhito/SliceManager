@@ -49,6 +49,32 @@ export const manager = new SliceManager<State>(
 )
 ```
 
+### store connect
+```typescript jsx
+export const rootReducer = combineReducers({
+    manager: manager.slice.reducer,
+    //...other reducers
+    // secondManager: secondManager.slice.reducer,
+  });
+  
+  // if several managers
+  const managersMiddlewares = [
+    manager.middleware,
+    // secondManager.middleware,
+  ]
+  
+  const store =  configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) => {
+      return getDefaultMiddleware({
+        immutableCheck: false,
+        serializableCheck: false,
+        thunk: true,
+      }).concat(managersMiddlewares); // concat
+    },
+  })
+```
+
 ### usage with useManager
 
 ```typescript jsx
