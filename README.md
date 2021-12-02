@@ -51,7 +51,7 @@ export const manager = new SliceManager<State>(
 
 ### usage with useManager
 
-```react
+```typescript jsx
 import React from 'react';
 import {manager, State} from './base.stories';
 import {useManager} from '../src/useManager';
@@ -74,7 +74,7 @@ export const App = () => {
 
 ### base usage
 
-```react
+```typescript jsx
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {manager} from './base.stories';
