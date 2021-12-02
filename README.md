@@ -1,4 +1,5 @@
-# SliceManager
-Wrap over slice from @reduxjs/toolkit for automatic generation of actions and isolation of effect logic after changing the state of the fields
+## rtk-slice-manager
 
-https://img.shields.io/bundlephobia/min/rtk-slice-manager
+[![npm version](https://badge.fury.io/js/rtk-slice-manager.svg)](https://badge.fury.io/js/rtk-slice-manager)
+![npm](https://img.shields.io/npm/dm/rtk-slice-manager)
+![npm bundle size](https://img.shields.io/bundlephobia/min/rtk-slice-manager)
