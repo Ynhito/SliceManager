@@ -21,6 +21,7 @@ export type SwitchKeyValue<
 export type TransformKeysToCamelCase<
   T extends Record<string, any>,
   // step 1
+  // eslint-disable-next-line prettier/prettier
   T0 = { [K in keyof T]: `change${Capitalize<Cast<K, string>>}` },
   // step 2
   T1 = SwitchKeyValue<T0>,
