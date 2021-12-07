@@ -12,7 +12,6 @@ export function useManager<
   const handlers = <CapitalizeHookHandlers<T>>useMemo(() => {
     return Object.keys(actions).reduce((acc, cur) => {
       const key = <keyof typeof actions>cur;
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const action = <Exclude<typeof actions[typeof key], void>>actions[key];
       return {
         ...acc,

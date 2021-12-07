@@ -1,13 +1,42 @@
-import {Draft} from '@reduxjs/toolkit';
-import {Cast} from './types';
+import { Draft } from "@reduxjs/toolkit";
 
 export const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
-export const decapitalize = (str: string) =>
-  str.charAt(0).toLowerCase() + str.substring(1).toLowerCase();
+export const decapitalize = <T extends string>(str: T): T =>
+  (str.charAt(0).toLowerCase() + str.substring(1)) as T;
 
-export function capitalizeKey<T>(key: keyof Draft<T>) {
-  const stableKey = <Cast<typeof key, string>>key;
-  const keyName = `change${capitalize(stableKey)}`;
-  return keyName;
+export function recurAssign(obj: Draft<any>, outKey: string, value: any) {
+  Object.keys(obj).forEach((key: keyof typeof obj) => {
+    if (typeof obj[key] === "object") {
+      recurAssign(obj[key], outKey, value);
+    }
+    if (outKey === key) {
+      obj[key] = value;
+    }
+  });
+}
+
+export function getDeepKeys<T>(obj: T): string[] {
+  let keys: string[] = [];
+  for (const key in obj) {
+    keys.push(key);
+    if (typeof obj[key] === "object") {
+      const subkeys = getDeepKeys(obj[key]);
+      keys = keys.concat(
+        subkeys.map(function (subkey) {
+          return `${key}.${subkey}`;
+        })
+      );
+    }
+  }
+  return keys;
+}
+
+export function getHandlerName(keys: string[]) {
+  return keys.map((e) => `change${e.split(".").map(capitalize).join("")}`);
+}
+
+export const getStateKey = (handlerKey: string) => {
+  const match = handlerKey.match(/[A-Z][a-z]+/g);
+  return decapitalize(match?.[match.length - 1] || "");
 }
