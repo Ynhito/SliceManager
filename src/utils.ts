@@ -15,6 +15,8 @@ export function recurAssign(obj: Draft<any>, outKey: string, value: any) {
       obj[key] = value;
     }
   });
+
+  return obj;
 }
 
 export function getDeepKeys<T>(obj: T): string[] {
@@ -33,7 +35,7 @@ export function getDeepKeys<T>(obj: T): string[] {
   return keys;
 }
 
-export function getHandlerName(keys: string[]) {
+export function getNamesByKeys(keys: string[]) {
   return keys.map((key) => {
     const keyByArr = key.split(".");
     return {
@@ -45,9 +47,9 @@ export function getHandlerName(keys: string[]) {
 
 export function generateReducers<T extends Record<string, unknown>>(initialState: T) {
   const keys = getDeepKeys(initialState);
-  const handlerNames = getHandlerName(keys);
+  const names = getNamesByKeys(keys);
 
-  return handlerNames.reduce(
+  return names.reduce(
     (acc: ManagerReducers<T>, {handlerName, key}) => {
       acc[handlerName] = (state, action) => {
         recurAssign(state, key, action.payload);
