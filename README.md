@@ -23,30 +23,30 @@ import {SliceManager} from '../src/SliceManager';
 
 type State = {counter: number, short: boolean}
 
-export const manager = new SliceManager<State>(
-    'manager', 
+export const manager = new SliceManager<State>({
+  name: 'manager', 
+  initialState: {
+      counter: 1,
+      short: false
+  },
+  watchers: [
     {
-        counter: 1,
-        short: false
+      handler: (state) => (dispatch, getState) => {
+          // After changing the property short - counter increases by 10
+          dispatch(manager.actions.changeCounter(state.counter + 10));
+      }, 
+      fields: ['short']
     },
-    [
-      {
-        handler: (state) => (dispatch, getState) => {
-            // After changing the property short - counter increases by 10
-            dispatch(manager.actions.changeCounter(state.counter + 10));
-        }, 
-        fields: ['short']
-      },
-      {
-        handler: (state) => (dispatch, getState) => {
-          // any action
-          // Be careful not to allow circular dependencies
-          // Do not change "short" here, because a cycle will appear
-        }, 
-        fields: ['counter']
-      },
-    ],
-)
+    {
+      handler: (state) => (dispatch, getState) => {
+        // any action
+        // Be careful not to allow circular dependencies
+        // Do not change "short" here, because a cycle will appear
+      }, 
+      fields: ['counter']
+    },
+  ],
+})
 ```
 
 ### store connect
@@ -110,9 +110,9 @@ export type State = {
     }
 }
 
-export const manager = new SliceManager<State>(
-    'manager', 
-    {
+export const manager = new SliceManager<State>({
+    name: 'manager', 
+    initialState: {
         counter: 1,
         short: false,
         modal: {
@@ -121,7 +121,7 @@ export const manager = new SliceManager<State>(
             }
         }
     },
-)
+})
 
 export const ComponentFirst = () => {
     const [
