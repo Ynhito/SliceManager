@@ -1,6 +1,6 @@
 {
    "name": "rtk-slice-manager",
-   "version": "0.0.22",
+   "version": "0.0.23",
    "description": "Wrap over slice from @reduxjs/toolkit for automatic generation of actions and isolation of effect logic after changing the state of the fields",
    "main": "dist/index.js",
    "types": "dist",

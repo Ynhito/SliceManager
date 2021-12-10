@@ -9,10 +9,10 @@ type State = {counter: number, short: boolean}
 const actionNames = ['changeCounter', 'changeShort']
 
 const initialize = (customManager?: SliceManager<State>) => {
-    const manager = customManager || new SliceManager<State>(
-        'manager', 
+    const manager = customManager || new SliceManager<State>({
+        name: 'manager', 
         initialState,
-        [
+        watchers: [
             {
                 handler: (state) => (dispatch) => {
                     dispatch(manager.actions.changeCounter(state.counter + 10));
@@ -20,7 +20,7 @@ const initialize = (customManager?: SliceManager<State>) => {
                 fields: ['short']
             },
         ]
-    )
+    })
     const rootReducer = combineReducers({
         manager: manager.slice.reducer,
     });

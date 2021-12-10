@@ -6,46 +6,30 @@ import {
  } from "@reduxjs/toolkit";
  import {
    ManagerActions,
-   ManagerExtraReducers,
    ManagerMiddleware,
-   ManagerReducers,
-   WatcherHandlerAction,
-   Deps,
-   KeyOfDeps,
+   Watcher,
+   ManagerOptions,
  } from "./types";
- import { getDeepKeys, getHandlerName, recurAssign, decapitalize } from "./utils";
+ import {generateReducers, getMetaByAction} from "./utils";
  
  export class SliceManager<T extends Record<string, unknown>> {
    public slice: Slice<T, SliceCaseReducers<T>>;
    public actions: ManagerActions<T>;
-   constructor(
-     readonly name: string,
-     initialState: T,
-     readonly watchers: Array<{
-       handler: (params: T) => WatcherHandlerAction<T>;
-       fields: Deps<T>
-     }> = [],
-     extraReducers?: ManagerExtraReducers<T>
-   ) {
-     const keys = getDeepKeys(initialState);
-     const handlerNames = getHandlerName(keys);
- 
-     const reducers = handlerNames.reduce(
-       (acc: ManagerReducers<T>, {handlerName, key}) => {
-         acc[handlerName] = (state, action) => {
-           recurAssign(state, key, action.payload);
-         };
-         return acc;
-       },
-       {}
-     );
+   public name: string = '';
+   public watchers: Watcher<T>[] = [];
+   constructor({initialState, name, watchers = [], reducers, extraReducers}: ManagerOptions<T>) {
+     const baseReducers = generateReducers(initialState);
+     const reducersResult = {...baseReducers, ...reducers};
  
      this.slice = createSlice<T, SliceCaseReducers<T>>({
        name,
        initialState: initialState,
-       reducers,
+       reducers: reducersResult,
        extraReducers,
      });
+ 
+     this.watchers = watchers;
+     this.name = name;
      this.actions = this.slice.actions;
    }
  
@@ -54,15 +38,13 @@ import {
      (next) =>
      (action: PayloadAction) => {
        next(action);
-       const managerName = action.type.split(`/`);
-       if (managerName[0] !== this.name) {
+       const {fieldName, managerName} = getMetaByAction(action);
+       if (managerName !== this.name) {
          return;
        }
-       const field = managerName[1].split("change")[1];
-       const actionName = decapitalize<KeyOfDeps<T>>(field);
        const params: T = getState()[this.name];
        for (const watcher of this.watchers) {
-         if (watcher.fields.includes(actionName)) {
+         if (watcher.fields.includes(fieldName)) {
            return watcher.handler(params)(dispatch, getState, undefined);
          }
        }

@@ -1,4 +1,5 @@
-import { Draft } from "@reduxjs/toolkit";
+import { Draft, PayloadAction } from "@reduxjs/toolkit";
+import { KeyOfDeps, ManagerReducers } from "./types";
 
 export const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.substring(1);
@@ -33,11 +34,34 @@ export function getDeepKeys<T>(obj: T): string[] {
 }
 
 export function getHandlerName(keys: string[]) {
-  return keys.map((e) => {
-    const deepKeys = e.split(".");
+  return keys.map((key) => {
+    const keyByArr = key.split(".");
     return {
-      handlerName: `change${e.split(".").map(capitalize).join("")}`,
-      key: deepKeys[deepKeys.length - 1] || '',
+      handlerName: `change${keyByArr.map(capitalize).join("")}`,
+      key: keyByArr[keyByArr.length - 1] || '',
     }
   });
+}
+
+export function generateReducers<T extends Record<string, unknown>>(initialState: T) {
+  const keys = getDeepKeys(initialState);
+  const handlerNames = getHandlerName(keys);
+
+  return handlerNames.reduce(
+    (acc: ManagerReducers<T>, {handlerName, key}) => {
+      acc[handlerName] = (state, action) => {
+        recurAssign(state, key, action.payload);
+      };
+      return acc;
+    },
+    {}
+  );
+}
+
+export function getMetaByAction<T extends Record<string, unknown>>(action: PayloadAction) {
+  const actionByArr = action.type.split(`/`);
+  const field = actionByArr[1].split("change")[1];
+  const fieldName = decapitalize<KeyOfDeps<T>>(field);
+
+  return {fieldName, managerName: actionByArr[0]}
 }

@@ -41,6 +41,10 @@ export type Reducers<T extends Record<string, unknown>> = {
 export type CapitalizeHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Handlers<GetTypesByDeppKeys<S>>>;
 export type CapitalizeHookHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<HookHandlers<GetTypesByDeppKeys<S>>>;
 
+export interface Watcher<T extends Record<string, unknown>> {
+  handler: (params: T) => WatcherHandlerAction<T>;
+  fields: Deps<T>
+} 
 export type WatcherHandlerAction<T> = ThunkAction<any, T & any, undefined, Action<string>>
 export type ManagerMiddleware<T> = ThunkMiddleware<T & any, AnyAction, undefined>
 export type ManagerActions<T extends Record<string, unknown>> = CaseReducerActions<CapitalizeHandlers<T>>
@@ -48,7 +52,13 @@ export type ManagerActions<T extends Record<string, unknown>> = CaseReducerActio
 export type ManagerActionCreatorReducers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Reducers<S>>
 export type ManagerReducers<T> = ValidateSliceCaseReducers<T, SliceCaseReducers<T>>;
 export type ManagerExtraReducers<T> = CreateSliceOptions<T, SliceCaseReducers<T>, string>['extraReducers']
-
+export interface ManagerOptions<T extends Record<string, unknown>> {
+  readonly name: string,
+  initialState: T,
+  readonly watchers?: Watcher<T>[],
+  reducers?: ManagerReducers<T>,
+  extraReducers?: ManagerExtraReducers<T>
+}
 // ------------------------
 
 export type DotPrefix<T extends string> = T extends "" ? "" : `.${T}`

@@ -11,9 +11,9 @@ export type State = {
     }
 }
 
-export const manager = new SliceManager<State>(
-    'manager', 
-    {
+export const manager = new SliceManager<State>({
+    name: 'manager', 
+    initialState: {
         counter: 1,
         short: false,
         modal: {
@@ -22,7 +22,7 @@ export const manager = new SliceManager<State>(
             }
         }
     },
-)
+})
 
 export const ComponentFirst = () => {
     const [{counter, short, modal}, {changeCounter, changeShort, changeModalCreateOpen, changeModal, changeModalCreate}] = useManager<State>(manager)
