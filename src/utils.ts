@@ -1,7 +1,7 @@
 import { Draft } from "@reduxjs/toolkit";
 
 export const capitalize = (str: string) =>
-  str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
+  str.charAt(0).toUpperCase() + str.substring(1);
 export const decapitalize = <T extends string>(str: T): T =>
   (str.charAt(0).toLowerCase() + str.substring(1)) as T;
 
@@ -33,10 +33,11 @@ export function getDeepKeys<T>(obj: T): string[] {
 }
 
 export function getHandlerName(keys: string[]) {
-  return keys.map((e) => `change${e.split(".").map(capitalize).join("")}`);
-}
-
-export const getStateKey = (handlerKey: string) => {
-  const match = handlerKey.match(/[A-Z][a-z]+/g);
-  return decapitalize(match?.[match.length - 1] || "");
+  return keys.map((e) => {
+    const deepKeys = e.split(".");
+    return {
+      handlerName: `change${e.split(".").map(capitalize).join("")}`,
+      key: deepKeys[deepKeys.length - 1] || '',
+    }
+  });
 }

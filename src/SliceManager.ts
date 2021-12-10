@@ -13,7 +13,7 @@ import {
    Deps,
    KeyOfDeps,
  } from "./types";
- import { getDeepKeys, getStateKey, getHandlerName, recurAssign, decapitalize } from "./utils";
+ import { getDeepKeys, getHandlerName, recurAssign, decapitalize } from "./utils";
  
  export class SliceManager<T extends Record<string, unknown>> {
    public slice: Slice<T, SliceCaseReducers<T>>;
@@ -29,10 +29,10 @@ import {
    ) {
      const keys = getDeepKeys(initialState);
      const handlerNames = getHandlerName(keys);
+ 
      const reducers = handlerNames.reduce(
-       (acc: ManagerReducers<T>, handlerKey: string) => {
-         const key = getStateKey(handlerKey);
-         acc[handlerKey] = (state, action) => {
+       (acc: ManagerReducers<T>, {handlerName, key}) => {
+         acc[handlerName] = (state, action) => {
            recurAssign(state, key, action.payload);
          };
          return acc;
