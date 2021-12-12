@@ -1,5 +1,5 @@
 
-export const date = new Date().toISOString();
+const date = new Date().toISOString();
 
 export const object = {
     name: 'test',
@@ -12,65 +12,32 @@ export const object = {
     }
 }
 
-export const mutateObj1 = {
-    name: 'newTest',
-    date,
-    camelCase: 1,
-    modal: {
-        create: {
-            open: false,
-        }
-    }
-}
-
-export const mutateObj2 = {
-    name: 'test',
-    date,
-    camelCase: 13,
-    modal: {
-        create: {
-            open: false,
-        }
-    }
-}
-
-export const mutateObj3 = {
-    name: 'test',
-    date,
-    camelCase: 1,
-    modal: {
-        create: {
-            open: true,
-        }
-    }
-}
-
 export const keys = ['name', 'date', 'camelCase', 'modal', 'modal.create', 'modal.create.open']
 
 export const namesByKeys = [
     {
         handlerName: 'changeName',
-        key: 'name',
+        key: ['name'],
     },
     {
         handlerName: 'changeDate',
-        key: 'date',
+        key: ['date'],
     },
     {
         handlerName: 'changeCamelCase',
-        key: 'camelCase',
+        key: ['camelCase'],
     },
     {
         handlerName: 'changeModal',
-        key: 'modal',
+        key: ['modal'],
     },
     {
         handlerName: 'changeModalCreate',
-        key: 'create',
+        key: ['modal', 'create'],
     },
     {
         handlerName: 'changeModalCreateOpen',
-        key: 'open',
+        key: ['modal', 'create', 'open'],
     },
 ]
 

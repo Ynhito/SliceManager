@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+       "typeRoots": ["src/declarations", "node_modules/@types"],
        "noImplicitAny": true,
        "allowSyntheticDefaultImports": true,
        "sourceMap": false,

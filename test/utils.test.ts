@@ -1,5 +1,5 @@
-import { capitalize, decapitalize, generateReducers, getDeepKeys, getNamesByKeys, getMetaByAction, recurAssign } from '../src/utils';
-import {actionByMetaMap, handlerNames, keys, mutateObj1, mutateObj2, mutateObj3, namesByKeys, object} from './constants';
+import { capitalize, decapitalize, generateReducers, getDeepKeys, getNamesByKeys, getMetaByAction } from '../src/utils';
+import {actionByMetaMap, handlerNames, keys, namesByKeys, object} from './constants';
 
 describe('SliceManager utils', () => {
 
@@ -35,14 +35,4 @@ describe('SliceManager utils', () => {
     const reducerNames = Object.keys(reducers);
     expect(reducerNames).toEqual(handlerNames);
    });
-
-   it('recurAssign', () => {
-    const result1 = recurAssign(JSON.parse(JSON.stringify(object)), 'name', 'newTest')
-    const result2 = recurAssign(JSON.parse(JSON.stringify(object)), 'camelCase', 13)
-    const result3 = recurAssign(JSON.parse(JSON.stringify(object)), 'open', true)
-    expect(result1).toEqual(mutateObj1);
-    expect(result2).toEqual(mutateObj2);
-    expect(result3).toEqual(mutateObj3);
-   });
-
 });

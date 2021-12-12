@@ -4,15 +4,15 @@ import {
    Slice,
    SliceCaseReducers,
  } from "@reduxjs/toolkit";
- import {
+import {
    ManagerActions,
    ManagerMiddleware,
    Watcher,
    ManagerOptions,
  } from "./types";
- import {generateReducers, getMetaByAction} from "./utils";
+import {generateReducers, getMetaByAction} from "./utils";
  
- export class SliceManager<T extends Record<string, unknown>> {
+export class SliceManager<T extends Record<string, unknown>> {
    public slice: Slice<T, SliceCaseReducers<T>>;
    public actions: ManagerActions<T>;
    public name: string = '';

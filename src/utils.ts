@@ -1,23 +1,11 @@
-import { Draft, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { KeyOfDeps, ManagerReducers } from "./types";
+import set from 'lodash/set'
 
 export const capitalize = (str: string) =>
   str.charAt(0).toUpperCase() + str.substring(1);
 export const decapitalize = <T extends string>(str: T): T =>
   (str.charAt(0).toLowerCase() + str.substring(1)) as T;
-
-export function recurAssign(obj: Draft<any>, outKey: string, value: any) {
-  Object.keys(obj).forEach((key: keyof typeof obj) => {
-    if (typeof obj[key] === "object") {
-      recurAssign(obj[key], outKey, value);
-    }
-    if (outKey === key) {
-      obj[key] = value;
-    }
-  });
-
-  return obj;
-}
 
 export function getDeepKeys<T>(obj: T): string[] {
   let keys: string[] = [];
@@ -40,19 +28,19 @@ export function getNamesByKeys(keys: string[]) {
     const keyByArr = key.split(".");
     return {
       handlerName: `change${keyByArr.map(capitalize).join("")}`,
-      key: keyByArr[keyByArr.length - 1] || '',
+      key: keyByArr,
     }
   });
 }
 
 export function generateReducers<T extends Record<string, unknown>>(initialState: T) {
   const keys = getDeepKeys(initialState);
-  const names = getNamesByKeys(keys);
+  const handlerNames = getNamesByKeys(keys);
 
-  return names.reduce(
+  return handlerNames.reduce(
     (acc: ManagerReducers<T>, {handlerName, key}) => {
       acc[handlerName] = (state, action) => {
-        recurAssign(state, key, action.payload);
+        set(state, key, action.payload)
       };
       return acc;
     },
