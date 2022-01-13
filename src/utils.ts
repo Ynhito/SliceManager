@@ -1,5 +1,5 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { KeyOfDeps, ManagerReducers } from "./types";
+import { Deps, KeyOfDeps, ManagerReducers } from "./types";
 import set from 'lodash/set'
 
 export const capitalize = (str: string) =>
@@ -23,19 +23,31 @@ export function getDeepKeys<T>(obj: T): string[] {
   return keys;
 }
 
-export function getNamesByKeys(keys: string[]) {
-  return keys.map((key) => {
-    const keyByArr = key.split(".");
-    return {
-      handlerName: `change${keyByArr.map(capitalize).join("")}`,
-      key: keyByArr,
-    }
-  });
+function getKeysByArr<T extends string[], Result>(keys: T, callback: (keyByArr: string[]) => Result) {
+  return keys.map(e => callback(e.split('.')));
+}
+function capitalizeAllKeys(keys: string[], includeFirst = true) {
+  return keys
+    .map((key, i) => {
+      const firstKeyCheck = includeFirst ? capitalize(key) : key;
+      return i > 0 ? capitalize(key) : firstKeyCheck;
+    })
+    .join('')
+}
+
+export const getCapitalizeFields = (fields: Deps<unknown>) => 
+  getKeysByArr(fields, (keyByArr) => capitalizeAllKeys(keyByArr, false))
+
+export function getHandlerNames(keys: string[]) {
+  return getKeysByArr(keys, (keyByArr) => ({
+    handlerName: `change${capitalizeAllKeys(keyByArr)}`,
+    key: keyByArr,
+  }))
 }
 
 export function generateReducers<T extends Record<string, unknown>>(initialState: T) {
   const keys = getDeepKeys(initialState);
-  const handlerNames = getNamesByKeys(keys);
+  const handlerNames = getHandlerNames(keys);
 
   return handlerNames.reduce(
     (acc: ManagerReducers<T>, {handlerName, key}) => {

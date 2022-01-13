@@ -1,4 +1,4 @@
-import { capitalize, decapitalize, generateReducers, getDeepKeys, getNamesByKeys, getMetaByAction } from '../src/utils';
+import { capitalize, decapitalize, generateReducers, getDeepKeys, getHandlerNames, getMetaByAction } from '../src/utils';
 import {actionByMetaMap, handlerNames, keys, namesByKeys, object} from './constants';
 
 describe('SliceManager utils', () => {
@@ -18,8 +18,8 @@ describe('SliceManager utils', () => {
     expect(result).toEqual(keys);
    });
 
-   it('getNamesByKeys', () => {
-    const result = getNamesByKeys(keys)
+   it('getHandlerNames', () => {
+    const result = getHandlerNames(keys)
     expect(result).toEqual(namesByKeys);
    });
 

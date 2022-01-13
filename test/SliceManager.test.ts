@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { SliceManager } from "../src/SliceManager";
+import { createSliceManager } from "../src/SliceManager";
+import { SliceManager } from "../src/types";
 
 const initialState = {
     counter: 1,
@@ -9,7 +10,7 @@ type State = {counter: number, short: boolean}
 const actionNames = ['changeCounter', 'changeShort']
 
 const initialize = (customManager?: SliceManager<State>) => {
-    const manager = customManager || new SliceManager<State>({
+    const manager = customManager || createSliceManager<State>({
         name: 'manager', 
         initialState,
         watchers: [

@@ -1,4 +1,4 @@
-import { combineReducers, configureStore, createAction } from '@reduxjs/toolkit'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import {manager} from './base.stories';
 
 export const rootReducer = combineReducers({

@@ -1,8 +1,8 @@
-import {SliceManager} from '../src/SliceManager';
+import {createSliceManager} from '../src';
 
 export type State = {counter: number, short: boolean}
 
-export const manager = new SliceManager<State>({
+export const manager = createSliceManager<State>({
   name: 'manager', 
   initialState: {
       counter: 1,

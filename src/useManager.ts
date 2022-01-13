@@ -1,7 +1,6 @@
 import {useMemo} from 'react';
-import {SliceManager} from './SliceManager';
 import {useDispatch, useSelector} from 'react-redux';
-import {CapitalizeHookHandlers} from './types';
+import {CapitalizeHookHandlers, SliceManager} from './types';
 
 export function useManager<
   T extends Record<string, unknown>,

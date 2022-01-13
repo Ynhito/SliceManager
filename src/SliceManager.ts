@@ -4,50 +4,51 @@ import {
    Slice,
    SliceCaseReducers,
  } from "@reduxjs/toolkit";
-import {
+ import {
    ManagerActions,
    ManagerMiddleware,
-   Watcher,
    ManagerOptions,
+   SliceManager,
  } from "./types";
-import {generateReducers, getMetaByAction} from "./utils";
+ import {generateReducers, getCapitalizeFields, getMetaByAction} from "./utils";
  
-export class SliceManager<T extends Record<string, unknown>> {
-   public slice: Slice<T, SliceCaseReducers<T>>;
-   public actions: ManagerActions<T>;
-   public name: string = '';
-   public watchers: Watcher<T>[] = [];
-   constructor({initialState, name, watchers = [], reducers, extraReducers}: ManagerOptions<T>) {
-     const baseReducers = generateReducers(initialState);
-     const reducersResult = {...baseReducers, ...reducers};
+ export function createSliceManager<T extends Record<string, unknown>>(
+   {initialState, name, watchers = [], reducers, extraReducers}: ManagerOptions<T>
+ ): SliceManager<T> {
+   const baseReducers = generateReducers(initialState);
+   const reducersResult = {...baseReducers, ...reducers};
  
-     this.slice = createSlice<T, SliceCaseReducers<T>>({
+   const slice: Slice<T, SliceCaseReducers<T>> = createSlice<T, SliceCaseReducers<T>>({
        name,
        initialState: initialState,
        reducers: reducersResult,
        extraReducers,
-     });
+   });
+   const actions: ManagerActions<T> = slice.actions;
  
-     this.watchers = watchers;
-     this.name = name;
-     this.actions = this.slice.actions;
-   }
- 
-   public middleware: ManagerMiddleware<T> =
+   const middleware: ManagerMiddleware<T> =
      ({ dispatch, getState }) =>
      (next) =>
      (action: PayloadAction) => {
        next(action);
        const {fieldName, managerName} = getMetaByAction(action);
-       if (managerName !== this.name) {
+       if (managerName !== name) {
          return;
        }
-       const params: T = getState()[this.name];
-       for (const watcher of this.watchers) {
-         if (watcher.fields.includes(fieldName)) {
+       const params: T = getState()[name];
+       for (const watcher of watchers) {
+         const fields = getCapitalizeFields(watcher.fields);
+         if (fields.includes(fieldName)) {
            return watcher.handler(params)(dispatch, getState, undefined);
          }
        }
      };
+ 
+     return {
+       actions,
+       name,
+       middleware,
+       slice,
+     }
  }
  

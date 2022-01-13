@@ -1,7 +1,9 @@
-import { CaseReducer, CaseReducerWithPrepare, PayloadAction, ThunkAction, Action, CaseReducerActions, SliceCaseReducers, CreateSliceOptions, ValidateSliceCaseReducers } from "@reduxjs/toolkit"
+import { CaseReducer, CaseReducerWithPrepare, PayloadAction, ThunkAction, Action, CaseReducerActions, SliceCaseReducers, CreateSliceOptions, ValidateSliceCaseReducers, Slice } from "@reduxjs/toolkit"
 import { ThunkMiddleware } from 'redux-thunk';
 import { AnyAction } from 'redux';
 // https://stackoverflow.com/questions/58434389/typescript-deep-keyof-of-a-nested-object
+
+export type State = Record<string, unknown>;
 
 export type Cast<T, U> = T extends U ? T : any
 
@@ -26,38 +28,43 @@ export type TransformKeysToCamelCase<
   }
 > = T2
 
-export type Handlers<T extends Record<string, unknown>> = {
+export type Handlers<T extends State> = {
     [K in keyof T]: CaseReducer<T, PayloadAction<T[K]>> | CaseReducerWithPrepare<T, PayloadAction<any, string, any, any>>;
 }
 
-export type HookHandlers<T extends Record<string, unknown>> = {
+export type HookHandlers<T extends State> = {
   [K in keyof T]: (value: T[K]) => void;
 }
 
-export type Reducers<T extends Record<string, unknown>> = {
+export type Reducers<T extends State> = {
   [K in keyof T]?: CaseReducer<T, PayloadAction<any>> | CaseReducerWithPrepare<T, PayloadAction<any, string, any, any>>;
 };
 
-export type CapitalizeHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Handlers<GetTypesByDeppKeys<S>>>;
-export type CapitalizeHookHandlers<S extends Record<string, unknown>> = TransformKeysToCamelCase<HookHandlers<GetTypesByDeppKeys<S>>>;
+export type CapitalizeHandlers<S extends State> = TransformKeysToCamelCase<Handlers<GetTypesByDeppKeys<S>>>;
+export type CapitalizeHookHandlers<S extends State> = TransformKeysToCamelCase<HookHandlers<GetTypesByDeppKeys<S>>>;
 
-export interface Watcher<T extends Record<string, unknown>> {
+export interface Watcher<T extends State> {
   handler: (params: T) => WatcherHandlerAction<T>;
   fields: Deps<T>
 } 
 export type WatcherHandlerAction<T> = ThunkAction<any, T & any, undefined, Action<string>>
 export type ManagerMiddleware<T> = ThunkMiddleware<T & any, AnyAction, undefined>
-export type ManagerActions<T extends Record<string, unknown>> = CaseReducerActions<CapitalizeHandlers<T>>
+export type ManagerActions<T extends State> = CaseReducerActions<CapitalizeHandlers<T>>
 | CaseReducerActions<SliceCaseReducers<T>>
-export type ManagerActionCreatorReducers<S extends Record<string, unknown>> = TransformKeysToCamelCase<Reducers<S>>
-export type ManagerReducers<T> = ValidateSliceCaseReducers<T, SliceCaseReducers<T>>;
+export type ManagerReducers<T, T0 extends SliceCaseReducers<T> = SliceCaseReducers<T>> = ValidateSliceCaseReducers<T, T0>;
 export type ManagerExtraReducers<T> = CreateSliceOptions<T, SliceCaseReducers<T>, string>['extraReducers']
-export interface ManagerOptions<T extends Record<string, unknown>> {
+export interface ManagerOptions<T extends State> {
   readonly name: string,
-  initialState: T,
-  readonly watchers?: Watcher<T>[],
-  reducers?: ManagerReducers<T>,
-  extraReducers?: ManagerExtraReducers<T>
+    initialState: T,
+    readonly watchers?: Watcher<T>[],
+    reducers?: ManagerReducers<T, Partial<CapitalizeHandlers<T>> & SliceCaseReducers<T>>,
+    extraReducers?: ManagerExtraReducers<T>
+}
+export type SliceManager<T extends State> = {
+  actions: ManagerActions<T>,
+  name: string,
+  middleware: ManagerMiddleware<T>,
+  slice: Slice<T, SliceCaseReducers<T>>,
 }
 // ------------------------
 
@@ -67,7 +74,7 @@ export type DotNestedKeys<T> = T extends (Number | Date | Function | Array<any> 
     { [K in Exclude<keyof T, symbol>]: `${K}` | `${K}${DotPrefix<DotNestedKeys<T[K]>>}` }[Exclude<keyof T, symbol>]
     : "") extends infer D ? Extract<D, string> : never;
 
-type GetTypesByDeppKeys<
+export type GetTypesByDeppKeys<
   T,
   D extends string = '.',
   T0 = {
@@ -77,7 +84,10 @@ type GetTypesByDeppKeys<
   T2 = { [K in keyof T1]: GetTypeByKeys<Split<Cast<T1[K], string>, D>, T>}
 > = T2
 
-export type Deps<T> = Array<keyof GetTypesByDeppKeys<T>>
+export type Deps<T> = Array<keyof {
+  [K in DotNestedKeys<T>]: GetTypeByKeys<Split<Cast<K, string>, '.'>, T>
+}>
+
 export type KeyOfDeps<T> = Cast<keyof Deps<T>, string>
 
 export type Split<S extends string, D extends string> =
