@@ -19,11 +19,10 @@ yarn add rtk-slice-manager
 
 ### example create manager instance and definition watchers
 ```typescript
-import {SliceManager} from '../src/SliceManager';
 
 type State = {counter: number, short: boolean}
 
-export const manager = new SliceManager<State>({
+export const manager = createSliceManager<State>({
   name: 'manager', 
   initialState: {
       counter: 1,
@@ -110,7 +109,7 @@ export type State = {
     }
 }
 
-export const manager = new SliceManager<State>({
+export const manager = createSliceManager<State>({
     name: 'manager', 
     initialState: {
         counter: 1,
@@ -120,6 +119,17 @@ export const manager = new SliceManager<State>({
                 open: false
             }
         }
+    },
+    watchers: [
+    {
+      handler: (state) => (dispatch, getState) => {
+        // any action
+        // Be careful not to allow circular dependencies
+        // Do not change "short" here, because a cycle will appear
+      }, 
+      // example deps by nested state value
+      // ts autocomplete is present
+      fields: ['modal.create.open']
     },
 })
 
